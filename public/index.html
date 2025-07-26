@@ -1,33 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Blackjack Counter</title>
   <style>
+    :root {
+      --bg: #f9f9f9;
+      --text: #111;
+      --accent: #007aff; /* iOS Blue */
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
     body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      font-family: sans-serif;
+      text-align: center;
+      padding: 1rem;
     }
-    button {
-      width: 100px;
-      padding: 15px;
-      margin: 10px;
-      font-size: 24px;
-    }
+
     h1 {
-      font-size: 48px;
+      font-size: 6vw;
+      margin-bottom: 5vh;
+      font-weight: 600;
+    }
+
+    .button {
+      width: 80vw;
+      max-width: 300px;
+      padding: 20px;
+      margin: 10px 0;
+      font-size: 6vw;
+      max-font-size: 30px;
+      font-weight: 600;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      background: var(--accent);
+      box-shadow: 0 4px 12px var(--shadow);
+      transition: transform 0.1s ease;
+    }
+
+    .button:active {
+      transform: scale(0.97);
+    }
+
+    .zero {
+      background: #ccc;
+      color: #000;
+    }
+
+    .minus {
+      background: #ff3b30;
     }
   </style>
 </head>
 <body>
   <h1 id="count">0</h1>
-  <button onclick="sendUpdate(1)">+1</button>
-  <button onclick="sendUpdate(0)">0</button>
-  <button onclick="sendUpdate(-1)">-1</button>
+  <button class="button plus" onclick="sendUpdate(1)">+1</button>
+  <button class="button zero" onclick="sendUpdate(0)">0</button>
+  <button class="button minus" onclick="sendUpdate(-1)">-1</button>
 
   <script>
     let ws = new WebSocket("wss://" + location.host + "/ws");
