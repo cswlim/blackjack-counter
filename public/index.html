@@ -8,7 +8,9 @@
     :root {
       --bg: #f9f9f9;
       --text: #111;
-      --accent: #007aff; /* iOS Blue */
+      --accent: #007aff;
+      --danger: #ff3b30;
+      --gray: #555;
       --shadow: rgba(0, 0, 0, 0.1);
     }
 
@@ -38,12 +40,10 @@
       padding: 20px;
       margin: 10px 0;
       font-size: 6vw;
-      max-font-size: 30px;
       font-weight: 600;
       color: white;
       border: none;
       border-radius: 15px;
-      background: var(--accent);
       box-shadow: 0 4px 12px var(--shadow);
       transition: transform 0.1s ease;
     }
@@ -52,26 +52,37 @@
       transform: scale(0.97);
     }
 
-    .zero {
-      background: #ccc;
-      color: #000;
+    .plus {
+      background: var(--accent);
     }
 
     .minus {
-      background: #ff3b30;
+      background: var(--danger);
     }
 
     .reset {
-      background: #555;
+      background: var(--gray);
+    }
+
+    .hint {
+      display: block;
+      font-size: 3vw;
+      font-weight: 400;
+      opacity: 0.8;
+      margin-top: 5px;
     }
 
   </style>
 </head>
 <body>
   <h1 id="count">0</h1>
-  <button class="button plus" onclick="sendUpdate(1)">+1</button>
-  <button class="button zero" onclick="sendUpdate(0)">0</button>
-  <button class="button minus" onclick="sendUpdate(-1)">-1</button>
+  <button class="button plus" onclick="sendUpdate(1)">
+      +1<br>
+      <span class="hint">2–6</span>
+  </button>
+  <button class="button minus" onclick="sendUpdate(-1)">-1
+      <span class="hint">10</span>
+  </button>
   <button class="button reset" onclick="sendReset()">Reset</button>
 
   <script>
@@ -82,6 +93,10 @@
 
     function sendUpdate(value) {
       ws.send(value);
+    }
+
+    function sendReset() {
+      ws.send("reset");
     }
   </script>
 </body>
