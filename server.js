@@ -7,28 +7,33 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-let count = 0;
+// ✅ Use a Map to track individual counters
+const clientCounts = new Map();
 
 wss.on('connection', (ws) => {
-  ws.send(count); // Send current count on connect
+  // Initialize count to 0 for this user
+  clientCounts.set(ws, 0);
+  ws.send(0); // Send initial count
 
   ws.on('message', (message) => {
     const val = parseInt(message);
     if (!isNaN(val)) {
-      count += val;
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(count);
-        }
-      });
+      const current = clientCounts.get(ws) || 0;
+      const updated = current + val;
+      clientCounts.set(ws, updated);
+      ws.send(updated); // Only send to this user
     }
+  });
+
+  ws.on('close', () => {
+    clientCounts.delete(ws); // Cleanup on disconnect
   });
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ Only ONE listen call — using PORT for Render compatibility
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
