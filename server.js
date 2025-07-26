@@ -16,14 +16,21 @@ wss.on('connection', (ws) => {
   ws.send(0); // Send initial count
 
   ws.on('message', (message) => {
-    const val = parseInt(message);
-    if (!isNaN(val)) {
-      const current = clientCounts.get(ws) || 0;
-      const updated = current + val;
-      clientCounts.set(ws, updated);
-      ws.send(updated); // Only send to this user
-    }
-  });
+  if (message === "reset") {
+    clientCounts.set(ws, 0);
+    ws.send(0);
+    return;
+  }
+
+  const val = parseInt(message);
+  if (!isNaN(val)) {
+    const current = clientCounts.get(ws) || 0;
+    const updated = current + val;
+    clientCounts.set(ws, updated);
+    ws.send(updated);
+  }
+});
+
 
   ws.on('close', () => {
     clientCounts.delete(ws); // Cleanup on disconnect
