@@ -11,25 +11,25 @@ const wss = new WebSocket.Server({ server });
 const clientCounts = new Map();
 
 wss.on('connection', (ws) => {
-  // Initialize count to 0 for this user
-  clientCounts.set(ws, 0);
-  ws.send(0); // Send initial count
+  // Initialize personal count
+  let count = 0;
+  ws.send(count); // Send initial count
 
   ws.on('message', (message) => {
-  if (message === "reset") {
-    clientCounts.set(ws, 0);
-    ws.send(0);
-    return;
-  }
+    if (message === "reset") {
+      count = 0;
+      ws.send(count);
+      return;
+    }
 
-  const val = parseInt(message);
-  if (!isNaN(val)) {
-    const current = clientCounts.get(ws) || 0;
-    const updated = current + val;
-    clientCounts.set(ws, updated);
-    ws.send(updated);
-  }
+    const val = parseInt(message);
+    if (!isNaN(val)) {
+      count += val;
+      ws.send(count);
+    }
+  });
 });
+
 
 
   ws.on('close', () => {
