@@ -60,6 +60,11 @@
     .minus {
       background: #ff3b30;
     }
+
+    .reset {
+      background: #555;
+    }
+
   </style>
 </head>
 <body>
@@ -67,6 +72,7 @@
   <button class="button plus" onclick="sendUpdate(1)">+1</button>
   <button class="button zero" onclick="sendUpdate(0)">0</button>
   <button class="button minus" onclick="sendUpdate(-1)">-1</button>
+  <button class="button reset" onclick="sendReset()">Reset</button>
 
   <script>
     let ws = new WebSocket("wss://" + location.host + "/ws");
