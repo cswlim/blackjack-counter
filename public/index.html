@@ -72,22 +72,26 @@
       opacity: 0.8;
       margin-top: 5px;
     }
-
   </style>
 </head>
 <body>
   <h1 id="count">0</h1>
+
   <button class="button plus" onclick="sendUpdate(1)">
-      +1<br>
-      <span class="hint">2–6</span>
+    +1<br>
+    <span class="hint">2–6</span>
   </button>
-  <button class="button minus" onclick="sendUpdate(-1)">-1
-      <span class="hint">10</span>
+
+  <button class="button minus" onclick="sendUpdate(-1)">
+    -1<br>
+    <span class="hint">10, J, Q, K, A</span>
   </button>
+
   <button class="button reset" onclick="sendReset()">Reset</button>
 
   <script>
     let ws = new WebSocket("wss://" + location.host + "/ws");
+
     ws.onmessage = (event) => {
       document.getElementById("count").innerText = event.data;
     };
