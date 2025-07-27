@@ -8,13 +8,16 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
-  // ✅ Individual count per user (not shared)
   let count = 0;
-  ws.send(count); // Send initial count to client
+  console.log('New client connected');
+  ws.send(count);
 
   ws.on('message', (message) => {
+    console.log("Received message:", message);
+
     if (message === "reset") {
       count = 0;
+      console.log("Reset triggered → count = 0");
       ws.send(count);
       return;
     }
@@ -22,11 +25,11 @@ wss.on('connection', (ws) => {
     const val = parseInt(message);
     if (!isNaN(val)) {
       count += val;
+      console.log("Updated count:", count);
       ws.send(count);
     }
   });
 
-  // ✅ Optional: Handle disconnect (no need for cleanup now)
   ws.on('close', () => {
     console.log("Client disconnected");
   });
