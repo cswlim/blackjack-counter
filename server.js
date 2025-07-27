@@ -27,7 +27,6 @@ wss.on('connection', (ws) => {
       count += val;
       ws.send(count);
     }
-  });
 });
 
 
