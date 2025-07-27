@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Blackjack Counter</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --bg: #f9f9f9;
@@ -82,7 +83,7 @@
       white-space: nowrap;
     }
 
-    /* 🌗 Dark Mode Toggle Button */
+    /* 🌗 Dark Mode Toggle */
     .theme-toggle {
       position: absolute;
       top: 1rem;
@@ -101,8 +102,9 @@
     }
   </style>
 </head>
-<body>
-  <!-- 🌗 Toggle Button -->
+
+<body class="dark">
+  <!-- 🌗 Dark Mode Toggle Button -->
   <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
     🌙
   </button>
@@ -130,7 +132,7 @@
       }
     }
 
-    // ⌨️ Keyboard Shortcuts
+    // ⌨️ Keyboard Support
     document.addEventListener("keydown", (e) => {
       if (e.key === "+" || e.key === "=" || e.key === "ArrowUp") {
         sendUpdate(1);
@@ -139,12 +141,12 @@
       }
     });
 
-    // 🌗 Dark Mode Toggle
+    // 🌗 Toggle Theme
     function toggleTheme() {
       const body = document.body;
       const button = document.querySelector(".theme-toggle");
       body.classList.toggle("dark");
-      button.textContent = body.classList.contains("dark") ? "☀️" : "🌙";
+      button.textContent = body.classList.contains("dark") ? "🌙" : "☀️";
     }
   </script>
 </body>
