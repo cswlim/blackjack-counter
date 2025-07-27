@@ -7,13 +7,10 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-// ✅ Use a Map to track individual counters
-const clientCounts = new Map();
-
 wss.on('connection', (ws) => {
-  // Initialize personal count
+  // ✅ Individual count per user (not shared)
   let count = 0;
-  ws.send(count); // Send initial count
+  ws.send(count); // Send initial count to client
 
   ws.on('message', (message) => {
     if (message === "reset") {
@@ -27,12 +24,11 @@ wss.on('connection', (ws) => {
       count += val;
       ws.send(count);
     }
-});
+  });
 
-
-
+  // ✅ Optional: Handle disconnect (no need for cleanup now)
   ws.on('close', () => {
-    clientCounts.delete(ws); // Cleanup on disconnect
+    console.log("Client disconnected");
   });
 });
 
@@ -42,4 +38,3 @@ const port = process.env.PORT || 3000;
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
