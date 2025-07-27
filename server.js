@@ -13,7 +13,7 @@ wss.on('connection', (ws) => {
 
   ws.on('message', (message) => {
     if (message === "reset") {
-      count -= count;  // Force set to zero
+      let count = 0;  // Force set to zero
       ws.send(count);
       return;
     }
