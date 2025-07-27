@@ -128,7 +128,7 @@
   </button>
 
   <button class="button minus" onclick="sendUpdate(-1)">
-    -1 <span class="hint">10s</span>
+    -1 <span class="hint">10 | A</span>
   </button>
 
   <!-- Save Hand Button -->
@@ -177,20 +177,30 @@
 
     // 💾 Save Hand Count
     function saveHandCount() {
-      // Add current count to the top of the history
-      handHistory.unshift(currentCount);
+  // Add current count to the top of the history
+  handHistory.unshift(currentCount);
 
-      // Keep only the last 2
-      if (handHistory.length > 2) {
-        handHistory = handHistory.slice(0, 2);
-      }
+  // Keep only the last 2
+  if (handHistory.length > 2) {
+    handHistory = handHistory.slice(0, 2);
+  }
 
-      // Update UI
-      const handDisplay = document.getElementById("handHistory");
-      handDisplay.innerHTML = handHistory
-        .map((val, i) => `<span>Hand ${i + 1}: ${val >= 0 ? "+" : ""}${val}</span>`)
-        .join("");
-    }
+  // Update UI with new labels
+  const handDisplay = document.getElementById("handHistory");
+  handDisplay.innerHTML = `
+    <span>Previous Count: ${formatCount(handHistory[0])}</span>
+    <span>Previous Count+: ${formatCount(handHistory[1] ?? "—")}</span>
+  `;
+}
+
+// helper to format +/– signs
+function formatCount(val) {
+  if (typeof val === "number") {
+    return val >= 0 ? `+${val}` : `${val}`;
+  }
+  return val;
+}
+
   </script>
 </body>
 </html>
