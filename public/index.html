@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Blackjack Counter</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-
   <style>
     :root {
       --bg: #f9f9f9;
@@ -43,7 +42,7 @@
 
     h1 {
       font-size: clamp(2rem, 8vw, 5rem);
-      margin-bottom: 5vh;
+      margin-bottom: 4vh;
       font-weight: 700;
     }
 
@@ -51,7 +50,7 @@
       width: 90vw;
       max-width: 360px;
       padding: 1.25rem;
-      margin: 0.75rem 0;
+      margin: 0.65rem 0;
       font-size: clamp(1.5rem, 5vw, 2rem);
       font-weight: 700;
       color: white;
@@ -74,6 +73,10 @@
       background: var(--danger);
     }
 
+    .gray {
+      background: var(--gray);
+    }
+
     .hint {
       display: block;
       font-size: clamp(0.8rem, 2vw, 1rem);
@@ -83,7 +86,6 @@
       white-space: nowrap;
     }
 
-    /* 🌗 Dark Mode Toggle */
     .theme-toggle {
       position: absolute;
       top: 1rem;
@@ -100,14 +102,24 @@
     .theme-toggle:hover {
       opacity: 1;
     }
+
+    .hand-display {
+      margin-top: 2vh;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .hand-display span {
+      display: block;
+      opacity: 0.85;
+    }
   </style>
 </head>
-
 <body class="dark">
-  <!-- 🌗 Dark Mode Toggle Button -->
-  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
-    🌙
-  </button>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">🌙</button>
 
   <h1 id="count">0</h1>
 
@@ -116,14 +128,28 @@
   </button>
 
   <button class="button minus" onclick="sendUpdate(-1)">
-    -1 <span class="hint">10 | A</span>
+    -1 <span class="hint">10s</span>
   </button>
+
+  <!-- Save Hand Button -->
+  <button class="button gray" onclick="saveHandCount()">
+    Save Hand Count
+  </button>
+
+  <!-- Hand Count Display -->
+  <div class="hand-display" id="handHistory">
+    <span>Hand 1: —</span>
+    <span>Hand 2: —</span>
+  </div>
 
   <script>
     let ws = new WebSocket("wss://" + location.host + "/ws");
+    let currentCount = 0;
+    let handHistory = [];
 
     ws.onmessage = (event) => {
-      document.getElementById("count").innerText = event.data;
+      currentCount = parseInt(event.data);
+      document.getElementById("count").innerText = currentCount;
     };
 
     function sendUpdate(value) {
@@ -147,6 +173,23 @@
       const button = document.querySelector(".theme-toggle");
       body.classList.toggle("dark");
       button.textContent = body.classList.contains("dark") ? "🌙" : "☀️";
+    }
+
+    // 💾 Save Hand Count
+    function saveHandCount() {
+      // Add current count to the top of the history
+      handHistory.unshift(currentCount);
+
+      // Keep only the last 2
+      if (handHistory.length > 2) {
+        handHistory = handHistory.slice(0, 2);
+      }
+
+      // Update UI
+      const handDisplay = document.getElementById("handHistory");
+      handDisplay.innerHTML = handHistory
+        .map((val, i) => `<span>Hand ${i + 1}: ${val >= 0 ? "+" : ""}${val}</span>`)
+        .join("");
     }
   </script>
 </body>
