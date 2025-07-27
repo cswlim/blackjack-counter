@@ -9,15 +9,11 @@ const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
   let count = 0;
-  console.log('New client connected');
   ws.send(count);
 
   ws.on('message', (message) => {
-    console.log("Received message:", message);
-
     if (message === "reset") {
-      count = 0;
-      console.log("Reset triggered → count = 0");
+      count -= count;  // Force set to zero
       ws.send(count);
       return;
     }
@@ -25,7 +21,6 @@ wss.on('connection', (ws) => {
     const val = parseInt(message);
     if (!isNaN(val)) {
       count += val;
-      console.log("Updated count:", count);
       ws.send(count);
     }
   });
