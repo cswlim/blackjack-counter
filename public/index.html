@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Blackjack Trainer</title>
+  <title>Blackjack Counter</title>
   <style>
     body, html {
       margin: 0;
@@ -18,253 +18,162 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       min-height: 100vh;
       padding: 2rem;
       box-sizing: border-box;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      max-width: 600px;
-      margin-bottom: 1rem;
+      text-align: center;
     }
 
     .title {
-      font-size: 2rem;
+      font-size: 2.5rem;
       font-weight: 700;
-    }
-
-    .hands {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      width: 100%;
-      max-width: 600px;
-    }
-
-    .hand {
-      text-align: center;
-    }
-
-    .cards {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .card {
-      background-color: white;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 0.5rem 0.75rem;
-      font-size: 1.1rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      animation: deal 0.3s ease;
-      min-width: 40px;
-      text-align: center;
-    }
-
-    @keyframes deal {
-      from {
-        transform: scale(0.7);
-        opacity: 0;
-      }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .actions {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 1rem;
-      max-width: 600px;
-      width: 100%;
-      margin-top: 2rem;
-    }
-
-    .action-button {
-      padding: 1rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      color: white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: transform 0.1s ease;
-    }
-
-    .action-button:active {
-      transform: scale(0.98);
-    }
-
-    .hit { background-color: #34c759; }
-    .stand { background-color: #ff3b30; }
-    .double { background-color: #ff9500; }
-    .split { background-color: #007aff; }
-
-    .counter {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 0.25rem;
-    }
-
-    .true-count {
-      font-size: 1rem;
-      color: #888;
       margin-bottom: 1rem;
     }
 
-    .hand-history {
-      max-width: 600px;
+    .counter {
+      font-size: 4rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .true-count {
+      font-size: 1.2rem;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
       width: 100%;
+      max-width: 300px;
+    }
+
+    .button {
+      padding: 1rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 15px;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.1s ease;
+      width: 100%;
+    }
+
+    .button:active {
+      transform: scale(0.97);
+    }
+
+    .plus {
+      background-color: #34c759;
+    }
+
+    .minus {
+      background-color: #ff3b30;
+    }
+
+    .save {
+      background-color: #007aff;
+    }
+
+    .hint {
+      display: block;
+      font-size: 1rem;
+      font-weight: 400;
+      opacity: 0.8;
+      margin-top: 0.25rem;
+    }
+
+    .previous-counts {
       margin-top: 2rem;
+      max-width: 300px;
+      width: 100%;
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       padding: 1rem;
-      font-size: 0.95rem;
+      box-sizing: border-box;
+      font-size: 1rem;
       color: #333;
     }
 
-    .hand-history h4 {
+    .previous-counts h4 {
       margin: 0 0 0.5rem 0;
       font-size: 1rem;
       color: #666;
     }
 
-    .hand-history ul {
+    .previous-counts ul {
       list-style: none;
       padding: 0;
       margin: 0;
     }
 
-    .hand-history li {
+    .previous-counts li {
       padding: 0.25rem 0;
       border-bottom: 1px solid #eee;
     }
 
-    .hand-history li:last-child {
+    .previous-counts li:last-child {
       border-bottom: none;
     }
   </style>
 </head>
 <body>
   <div class="app-container">
-    <div class="header">
-      <h1 class="title">Blackjack Trainer</h1>
+    <div class="title">Blackjack Counter</div>
+    <div class="counter" id="count">0</div>
+    <h2 class="true-count" id="true-count">True Count: 0</h2>
+
+    <div class="buttons">
+      <button class="button plus" onclick="sendUpdate(1)">
+        +1<br>
+        <span class="hint">Cards 2–6</span>
+      </button>
+      <button class="button minus" onclick="sendUpdate(-1)">
+        -1<br>
+        <span class="hint">10s & Aces</span>
+      </button>
+      <button class="button save" onclick="saveHand()">Save Hand</button>
     </div>
 
-    <div class="counter">Running Count: <span id="count">0</span></div>
-    <div class="true-count">True Count: <span id="true-count">0</span></div>
-
-    <div class="hands">
-      <div class="hand dealer-hand">
-        <strong>Dealer</strong>
-        <div class="cards" id="dealer-cards"></div>
-      </div>
-      <div class="hand player-hand">
-        <strong>Player</strong>
-        <div class="cards" id="player-cards"></div>
-      </div>
-    </div>
-
-    <div class="actions">
-      <button class="action-button hit" onclick="dealCard('player')">Hit</button>
-      <button class="action-button stand">Stand</button>
-      <button class="action-button double">Double</button>
-      <button class="action-button split">Split</button>
-    </div>
-
-    <div class="hand-history">
-      <h4>Last 10 Hands</h4>
-      <ul id="hand-history-list"></ul>
+    <div class="previous-counts">
+      <h4>Previous Counts</h4>
+      <ul id="history"></ul>
     </div>
   </div>
 
   <script>
-    let runningCount = 0;
-    let trueCount = 0;
-    const deck = [];
-    const handHistory = [];
+    let count = 0;
+    let history = [];
 
-    const suits = ['♠', '♥', '♦', '♣'];
-    const ranks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
-
-    function createDecks(num = 6) {
-      const newDeck = [];
-      for (let d = 0; d < num; d++) {
-        for (let suit of suits) {
-          for (let rank of ranks) {
-            newDeck.push({ suit, rank });
-          }
-        }
-      }
-      return shuffle(newDeck);
+    function updateCountDisplay() {
+      document.getElementById("count").innerText = count;
+      document.getElementById("true-count").innerText = "True Count: " + (count / 6).toFixed(2);
     }
 
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
+    function sendUpdate(val) {
+      count += val;
+      updateCountDisplay();
     }
 
-    function dealCard(to = "player") {
-      if (deck.length === 0) {
-        deck.push(...createDecks());
-      }
-      const card = deck.pop();
-      const value = getHiLoValue(card.rank);
-      runningCount += value;
-      updateCount();
+    function saveHand() {
+      history.unshift(count);
+      if (history.length > 10) history = history.slice(0, 10);
 
-      const cardEl = document.createElement("div");
-      cardEl.className = "card";
-      cardEl.innerText = `${card.rank}${card.suit}`;
-      document.getElementById(`${to}-cards`).appendChild(cardEl);
-    }
-
-    function updateCount() {
-      document.getElementById("count").innerText = runningCount;
-      trueCount = Math.round((runningCount / Math.ceil(deck.length / 52)) * 10) / 10;
-      document.getElementById("true-count").innerText = isNaN(trueCount) ? 0 : trueCount;
-    }
-
-    function getHiLoValue(rank) {
-      if (['2','3','4','5','6'].includes(rank)) return 1;
-      if (['10','J','Q','K','A'].includes(rank)) return -1;
-      return 0;
-    }
-
-    // Example function for saving hand count
-    function saveHandCount() {
-      if (handHistory.length >= 10) handHistory.shift();
-      handHistory.push(runningCount);
-      updateHandHistory();
-    }
-
-    function updateHandHistory() {
-      const list = document.getElementById("hand-history-list");
+      const list = document.getElementById("history");
       list.innerHTML = "";
-      for (let count of [...handHistory].reverse()) {
+      history.forEach((c, i) => {
         const li = document.createElement("li");
-        li.innerText = `Previous count: ${count}`;
+        li.textContent = `#${i + 1}: ${c}`;
         list.appendChild(li);
-      }
+      });
     }
 
-    // Init deck
-    deck.push(...createDecks());
+    updateCountDisplay();
   </script>
 </body>
 </html>
