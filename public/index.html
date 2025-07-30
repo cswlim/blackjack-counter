@@ -28,11 +28,16 @@
       text-align: center;
     }
 
-    .reset-button {
+    .top-buttons {
       position: absolute;
       top: 1.5rem;
       right: 1.5rem;
-      background-color: #8e8e93;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .utility-button-top {
+      background-color: #3a3a3c;
       color: white;
       border: none;
       border-radius: 10px;
@@ -41,13 +46,18 @@
       cursor: pointer;
       transition: background-color 0.2s;
     }
-    .reset-button:hover {
-      background-color: #a0a0a5;
+    .utility-button-top:hover {
+      background-color: #555;
     }
+    .reset-button {
+      background-color: #8e8e93;
+    }
+
 
     .title {
       font-size: 2.2rem;
       font-weight: 700;
+      margin-top: 2.5rem; /* Make space for top buttons */
       margin-bottom: 1rem;
       color: #ffffff;
     }
@@ -171,7 +181,10 @@
 </head>
 <body>
   <div class="app-container">
-    <button class="reset-button" onclick="resetAll()">Reset</button>
+    <div class="top-buttons">
+      <button class="utility-button-top undo-button" onclick="undoLastAction()">Undo</button>
+      <button class="utility-button-top reset-button" onclick="resetAll()">Reset</button>
+    </div>
     <div class="title">Advanced Blackjack Counter</div>
 
     <div class="counter-display">
@@ -190,14 +203,14 @@
         <!-- New Remaining Cards Grid -->
         <div class="stats-grid">
             <h4>Remaining Cards</h4>
-            <div class="stat-item"><div class="stat-value" id="low-cards-left">120</div><div class="stat-label">Low (2-6)</div></div>
-            <div class="stat-item"><div class="stat-value" id="neutral-cards-left">72</div><div class="stat-label">Neutral (7-9)</div></div>
-            <div class="stat-item"><div class="stat-value" id="high-cards-left">120</div><div class="stat-label">High (10-A)</div></div>
+            <div class="stat-item"><div class="stat-value" id="low-cards-left">160</div><div class="stat-label">Low (2-6)</div></div>
+            <div class="stat-item"><div class="stat-value" id="neutral-cards-left">96</div><div class="stat-label">Neutral (7-9)</div></div>
+            <div class="stat-item"><div class="stat-value" id="high-cards-left">160</div><div class="stat-label">High (10-A)</div></div>
         </div>
         <!-- Cards Played Grid -->
         <div class="stats-grid">
             <h4>Cards Played</h4>
-            <div class="stat-item" style="grid-column: 1 / -1;"><div class="stat-value" id="cards-played">0 / 312</div><div class="stat-label">Total</div></div>
+            <div class="stat-item" style="grid-column: 1 / -1;"><div class="stat-value" id="cards-played">0 / 416</div><div class="stat-label">Total</div></div>
         </div>
     </div>
 
@@ -211,24 +224,19 @@
 
   <script>
     // --- STATE MANAGEMENT ---
-    const TOTAL_DECKS = 6;
+    const TOTAL_DECKS = 8; // Changed from 6 to 8
     const CARDS_PER_DECK = 52;
     const TOTAL_CARDS = TOTAL_DECKS * CARDS_PER_DECK;
-    // Initial card counts for a 6-deck shoe
-    const INITIAL_LOW_CARDS = 5 * 4 * TOTAL_DECKS;  // 120
-    const INITIAL_NEUTRAL_CARDS = 3 * 4 * TOTAL_DECKS; // 72
-    const INITIAL_HIGH_CARDS = 5 * 4 * TOTAL_DECKS; // 120
+    const INITIAL_LOW_CARDS = 5 * 4 * TOTAL_DECKS;
+    const INITIAL_NEUTRAL_CARDS = 3 * 4 * TOTAL_DECKS;
+    const INITIAL_HIGH_CARDS = 5 * 4 * TOTAL_DECKS;
 
-    // Core State
     let runningCount = 0;
     let cardsPlayed = 0;
-    
-    // **FIXED**: State for tracking played cards by type
     let lowCardsPlayed = 0;
     let neutralCardsPlayed = 0;
     let highCardsPlayed = 0;
-
-    let trendData = []; // Store data for the chart
+    let trendData = [];
     let trendChart;
 
     // --- DOM ELEMENTS ---
@@ -247,7 +255,6 @@
         return;
       }
       
-      // **FIXED**: Increment the correct played card counter
       if (value === 1) lowCardsPlayed++;
       else if (value === 0) neutralCardsPlayed++;
       else if (value === -1) highCardsPlayed++;
@@ -255,12 +262,37 @@
       runningCount += value;
       cardsPlayed++;
       
-      // Add data point for the chart using the latest data
       trendData.push({
           rc: runningCount,
-          tc: calculateTrueCount()
+          tc: calculateTrueCount(),
+          actionValue: value // Store the action value for undo
       });
 
+      updateDisplay();
+      updateChart();
+    }
+
+    /**
+     * Reverts the last action taken.
+     */
+    function undoLastAction() {
+      if (trendData.length === 0) {
+        console.log("Nothing to undo.");
+        return;
+      }
+
+      const lastAction = trendData.pop();
+      const lastValue = lastAction.actionValue;
+
+      // Revert state based on the undone action
+      cardsPlayed--;
+      runningCount -= lastValue;
+
+      if (lastValue === 1) lowCardsPlayed--;
+      else if (lastValue === 0) neutralCardsPlayed--;
+      else if (lastValue === -1) highCardsPlayed--;
+
+      // Update the UI
       updateDisplay();
       updateChart();
     }
@@ -273,20 +305,16 @@
     }
 
     function updateDisplay() {
-      // Update main counts
       runningCountEl.innerText = runningCount;
       const trueCount = calculateTrueCount();
       trueCountEl.innerText = `True Count: ${trueCount.toFixed(2)}`;
       
-      // Update true count color
       if (trueCount >= 2) trueCountEl.style.color = '#34c759';
       else if (trueCount <= -1) trueCountEl.style.color = '#ff3b30';
       else trueCountEl.style.color = '#e0e0e0';
       
-      // Update total cards played count
       cardsPlayedEl.innerText = `${cardsPlayed} / ${TOTAL_CARDS}`;
       
-      // **FIXED**: Update remaining cards count with correct logic
       lowCardsLeftEl.innerText = INITIAL_LOW_CARDS - lowCardsPlayed;
       neutralCardsLeftEl.innerText = INITIAL_NEUTRAL_CARDS - neutralCardsPlayed;
       highCardsLeftEl.innerText = INITIAL_HIGH_CARDS - highCardsPlayed;
@@ -297,7 +325,7 @@
         trendChart.data.labels = trendData.map((_, index) => index + 1);
         trendChart.data.datasets[0].data = trendData.map(d => d.rc);
         trendChart.data.datasets[1].data = trendData.map(d => d.tc);
-        trendChart.update('none'); // 'none' for no animation
+        trendChart.update('none');
     }
 
     function setupChart() {
@@ -339,19 +367,13 @@
     }
 
     function resetAll() {
-      // Reset core state
       runningCount = 0;
       cardsPlayed = 0;
-      
-      // **FIXED**: Reset played card counters
       lowCardsPlayed = 0;
       neutralCardsPlayed = 0;
       highCardsPlayed = 0;
-      
-      // Reset chart data
       trendData = [];
       
-      // Update the entire UI
       updateDisplay();
       updateChart();
       
